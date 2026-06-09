@@ -3,7 +3,7 @@ name = "consortium"
 version = "0.1.0"
 description = "LLM consortium for cold-case hypothesis generation and CEG construction"
 readme = "README.md"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.11"
 authors = [
     { name = "Adnan Mahmud", email = "s2887048@ed.ac.uk" },
 ]
