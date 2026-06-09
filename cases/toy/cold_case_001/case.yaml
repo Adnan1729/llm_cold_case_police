@@ -1,0 +1,24 @@
+case_id: cold_case_001
+case_name: Carnaden Antiques Shop Killing
+jurisdiction: Police Scotland — J Division (the Lothians and Scottish Borders)
+status: unresolved
+designated_for_evaluation: true
+
+victim:
+  name: Ewan Drummond
+  age_at_death: 52
+  occupation: Antiques shop owner
+
+incident:
+  location: Drummond Antiques, High Street, Carnaden, Scottish Borders
+  date_discovered: 2022-11-07  # Monday morning
+  estimated_window_of_death: "2022-11-04T21:00 to 2022-11-05T03:00"  # Friday evening — Saturday early hours
+  cause_of_death: Blunt-force trauma to head
+
+case_age_years: 3.6
+case_dormant_since: 2024-05-01
+
+artefacts:
+  narrative: ./narrative.md
+  evidence: ./evidence.json
+  ground_truth: ./ground_truth.md  # not to be passed to the pipeline

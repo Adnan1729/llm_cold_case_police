@@ -1,0 +1,161 @@
+{
+  "case_id": "cold_case_001",
+  "evidence_items": [
+    {
+      "id": "E001",
+      "type": "witness_statement",
+      "title": "Statement of Margaret Cameron, neighbour",
+      "content": "Margaret Cameron (71), resident at 14 High Street (immediately adjacent to Drummond Antiques), stated that at approximately 9pm on Friday 4 November she heard what she described as 'raised voices, sounded like an argument' from the direction of the shop. She could not make out any words and was unable to say with certainty whether the voices were inside or outside the building. She did not see anyone. She did not call the police at the time because 'arguments aren't unusual on a Friday night around here'.",
+      "source": "PC J. McKenzie interview, recorded 09/11/2022",
+      "timestamp_referenced": "2022-11-04T21:00:00",
+      "location_referenced": "Vicinity of High Street, Carnaden",
+      "reliability": "medium",
+      "reliability_note": "Witness is elderly with self-reported hearing impairment; timing approximate; no independent corroboration.",
+      "chain_of_custody_note": "Recorded statement, witness signature on file."
+    },
+    {
+      "id": "E002",
+      "type": "witness_statement",
+      "title": "Statement of Donald Stewart, licensee of The Rowan public house",
+      "content": "Mr Stewart confirmed that Robbie Thomson was a regular customer and was present in the public bar on the evening of Friday 4 November. He recalled Mr Thomson arriving 'around 7' and being present for 'most of the evening'. Pressed on the time Mr Thomson left, Mr Stewart stated he could not be certain — 'it was a Friday, we were rammed, I serve hundreds of pints'. He had no recollection of Mr Thomson leaving and did not recall him being present at closing time (23:00).",
+      "source": "DC L. Aitken interview, recorded 08/11/2022",
+      "timestamp_referenced": "2022-11-04T19:00:00 to 2022-11-04T23:00:00",
+      "location_referenced": "The Rowan, Carnaden",
+      "reliability": "medium",
+      "reliability_note": "Sober adult witness; busy environment limits recall of specific timings.",
+      "chain_of_custody_note": "Recorded statement on file."
+    },
+    {
+      "id": "E003",
+      "type": "digital_record",
+      "title": "CCTV footage — The Rowan public house exterior",
+      "content": "External CCTV from The Rowan covers the pub's main entrance and a portion of the High Street pavement. The recording for the night of Friday 4 November was available in full from 18:00 to 23:00 (after which the system overwrites). Review identified Robbie Thomson entering the pub at 19:06, and leaving the pub at 21:34. No return entry was captured during the remaining recording window (until 23:00). Direction of travel on exit: south, towards Drummond Antiques (approximately 120m away).",
+      "source": "Recovered from The Rowan on 08/11/2022 by DC L. Aitken; reviewed by DC Aitken and digital evidence officer J. Lockhart.",
+      "timestamp_referenced": "2022-11-04T18:00:00 to 2022-11-04T23:00:00",
+      "location_referenced": "The Rowan, Carnaden",
+      "reliability": "high",
+      "reliability_note": "Timestamped digital recording; metadata intact; chain of custody complete.",
+      "chain_of_custody_note": "Original storage device imaged 08/11/2022 (hash recorded); working copy used for review."
+    },
+    {
+      "id": "E004",
+      "type": "forensic_report",
+      "title": "Post-mortem report",
+      "content": "Examination conducted 07/11/2022 by Dr Iain MacLeod, Edinburgh Royal Infirmary. Cause of death: blunt-force trauma to the occipital region of the skull, single impact, depressed fracture with associated intracranial haemorrhage. Death would have been rapid; consciousness likely lost immediately. No defensive injuries to hands or forearms. No signs of restraint. Toxicology: blood alcohol 0.04% (well below driving limit); no drugs of abuse; therapeutic levels of atorvastatin (consistent with prescribed medication). Time of death estimated between 21:00 on 04/11/2022 and 03:00 on 05/11/2022, based on body temperature decline modelled against the storeroom ambient temperature of approximately 8°C.",
+      "source": "Dr I. MacLeod, Edinburgh Royal Infirmary, report dated 09/11/2022",
+      "timestamp_referenced": "2022-11-04T21:00:00 to 2022-11-05T03:00:00",
+      "location_referenced": "Drummond Antiques storeroom, Carnaden",
+      "reliability": "high",
+      "reliability_note": "Forensic pathology by senior consultant; standard methodology.",
+      "chain_of_custody_note": "Body recovered by SPA Forensic Services team 07/11/2022; documented chain to mortuary."
+    },
+    {
+      "id": "E005",
+      "type": "forensic_report",
+      "title": "Weapon analysis (no weapon recovered)",
+      "content": "Wound morphology suggests a blunt instrument approximately 4–5 cm in width at the contact face, with a rounded rather than sharp edge. The impact angle suggests the assailant was of approximately average adult height and standing behind and slightly to the left of the victim. The force required is consistent with a single deliberate blow rather than a fall or glancing strike. The shop's storeroom contained several candidate items capable of producing such an injury (a brass candlestick, a fire poker, a small iron statuette); none were identified as missing in the post-incident inventory and none showed visible evidence of contact with blood or tissue under preliminary examination.",
+      "source": "SPA Forensic Services, report dated 14/11/2022",
+      "timestamp_referenced": null,
+      "location_referenced": "Drummond Antiques storeroom",
+      "reliability": "high",
+      "reliability_note": "Standard wound-pattern analysis; absence of weapon limits conclusions about specific implement.",
+      "chain_of_custody_note": "Inventory items photographed but not seized."
+    },
+    {
+      "id": "E006",
+      "type": "digital_record",
+      "title": "Victim's phone records, evening of 04/11/2022",
+      "content": "Records obtained from EE under production order. Selected entries from the evening of Friday 4 November: 18:47 — incoming voice call from contact 'Calum Sinclair', duration 6 minutes 12 seconds. 19:22 — outgoing SMS to contact 'Robbie': 'Don't forget to lock up properly, the silver is out for valuation tomorrow.' 19:24 — read receipt received from recipient. No further outgoing activity. Incoming call 20:30 from contact 'Marion' — declined. No further incoming or outgoing activity until phone went offline at approximately 22:15 (last cell tower contact). Device was recovered from the victim's jacket pocket on 07/11/2022 with battery depleted.",
+      "source": "EE records, production order PO/2022/4419",
+      "timestamp_referenced": "2022-11-04T18:00:00 to 2022-11-04T23:00:00",
+      "location_referenced": "Carnaden cell area",
+      "reliability": "high",
+      "reliability_note": "Telecoms records obtained via production order; integrity assured.",
+      "chain_of_custody_note": "Digital evidence package CDP/2022/887."
+    },
+    {
+      "id": "E007",
+      "type": "digital_record",
+      "title": "Calum Sinclair phone tower data, 04/11/2022",
+      "content": "Cell tower data for Calum Sinclair's mobile number, provided under production order, places the device continuously within the central Edinburgh tower coverage area from 17:30 on Friday 4 November until 02:00 on Saturday 5 November. Coverage area is consistent with Mr Sinclair's stated location (his home in Stockbridge and the restaurant where he stated he dined). Driving from this area to Carnaden takes approximately 50 minutes; a return journey within the window of death would be detectable as a gap or anomaly in tower handoffs. No such gap is present.",
+      "source": "O2 records, production order PO/2022/4420; analysis by DC P. Begbie, Digital Forensics Unit",
+      "timestamp_referenced": "2022-11-04T17:30:00 to 2022-11-05T02:00:00",
+      "location_referenced": "Edinburgh central",
+      "reliability": "high",
+      "reliability_note": "Telecoms records; corroborating analysis from Digital Forensics Unit.",
+      "chain_of_custody_note": "Digital evidence package CDP/2022/889."
+    },
+    {
+      "id": "E008",
+      "type": "witness_statement",
+      "title": "Statement of Calum Sinclair",
+      "content": "Mr Sinclair (52), of Stockbridge, Edinburgh, gave a voluntary statement on 09/11/2022. He confirmed his commercial relationship with the deceased and acknowledged an active disagreement over a proposed sale of the shop premises. He stated that the 18:47 phone call on 04/11 was 'a last attempt to talk Ewan round' and that 'we ended it on bad terms — but on the phone, not in person'. He stated he then dined at a restaurant on Broughton Street with three friends from approximately 19:30 until 22:30, returning home by taxi. The three named companions, contacted independently, corroborated his presence at the restaurant throughout this period. Restaurant booking and card payment were verified.",
+      "source": "Voluntary statement, recorded 09/11/2022 by DI A. Ferguson",
+      "timestamp_referenced": "2022-11-04T18:00:00 to 2022-11-04T23:00:00",
+      "location_referenced": "Stockbridge / Broughton Street, Edinburgh",
+      "reliability": "high",
+      "reliability_note": "Corroborated by three independent witnesses, restaurant records, and cell tower data (E007).",
+      "chain_of_custody_note": "Recorded statement; supporting documents on file."
+    },
+    {
+      "id": "E009",
+      "type": "witness_statement",
+      "title": "Statement of Marion Drummond",
+      "content": "Ms Drummond (49), of Galashiels, gave a voluntary statement on 10/11/2022. She confirmed she retained keys to Drummond Antiques from the period of her marriage but stated she had not entered the premises in 'well over two years'. She stated she was at home in Galashiels on the evening of 04/11/2022 with her current partner, Mr Tom Beattie, from approximately 18:00 onwards. Mr Beattie's statement corroborates her presence but notes that he was watching television in the front room from approximately 20:00 and that Ms Drummond was upstairs from that time; he did not see her again until the following morning. Ms Drummond acknowledged an outstanding financial dispute regarding her divorce settlement but stated she had been pursuing this through her solicitor.",
+      "source": "Voluntary statement, recorded 10/11/2022 by DC L. Aitken",
+      "timestamp_referenced": "2022-11-04T18:00:00 to 2022-11-05T09:00:00",
+      "location_referenced": "Galashiels",
+      "reliability": "medium",
+      "reliability_note": "Partner corroboration is partial — covers presence in the house but not continuous observation. No independent verification.",
+      "chain_of_custody_note": "Recorded statement; partner statement on file."
+    },
+    {
+      "id": "E010",
+      "type": "physical_evidence",
+      "title": "Shop inventory comparison, Friday 04/11 versus Saturday 05/11",
+      "content": "Mr Drummond completed a routine stock-take on the morning of Friday 04/11/2022, recorded in a paper ledger kept on the shop counter. Items inventoried in the storeroom on that date included: (i) Victorian sterling silver tea service, four pieces, hallmarked Edinburgh 1887, estimated retail value £4,200; (ii) walnut jewellery box, late 19th century, containing assorted period items, estimated value £180; (iii) silver-handled letter opener, marked Sheffield 1924, estimated value £65. The inventory conducted by attending officers and Mr Thomson on Saturday 05/11/2022 found items (i), (ii), and (iii) absent. All other inventoried items were present and accounted for. No other items appeared to have been disturbed.",
+      "source": "Shop ledger (paper); attending officer inventory by PS R. Connor.",
+      "timestamp_referenced": "2022-11-04 to 2022-11-05",
+      "location_referenced": "Drummond Antiques storeroom",
+      "reliability": "high",
+      "reliability_note": "Two independent records, consistent in identifying the three missing items.",
+      "chain_of_custody_note": "Paper ledger seized; inventory document on file."
+    },
+    {
+      "id": "E011",
+      "type": "forensic_report",
+      "title": "Partial fingerprint, rear door frame",
+      "content": "A single partial fingerprint was recovered from the inside edge of the rear door frame of the shop, at a height of approximately 1.6m. The print is partial (estimated 40% of pattern recovered) and ridge clarity is moderate. Elimination prints were obtained voluntarily from the victim, Mr Thomson, Ms Drummond, and Mr Sinclair; the recovered print does not match any of these individuals. The print was searched against the National Fingerprint Database (IDENT1) with no match returned. The age of the print cannot be reliably established.",
+      "source": "SPA Forensic Services fingerprint report, 18/11/2022",
+      "timestamp_referenced": null,
+      "location_referenced": "Drummond Antiques rear door frame",
+      "reliability": "medium",
+      "reliability_note": "Print is partial; age uncertain; relevance to incident not established (could pre-date by any period).",
+      "chain_of_custody_note": "Lift recovered and stored; digital scan archived."
+    },
+    {
+      "id": "E012",
+      "type": "witness_statement",
+      "title": "Statement of Robbie Thomson",
+      "content": "Mr Thomson (28), of Mill Lane, Carnaden, gave his initial statement on the morning of discovery (07/11/2022). He stated he had locked up the shop at approximately 17:30 on Friday 04/11, his usual closing time when working a half-day. He walked to The Rowan public house, arriving around 19:00 after stopping at home, and 'was there for the rest of the evening — left around closing'. He stated he then walked home and slept. He had no contact with Mr Drummond after leaving the shop. On the morning of Monday 07/11 he arrived to open the shop at the usual time (09:30), found the rear door unlocked which he considered unusual, and on entering the storeroom found Mr Drummond's body. He called 999 immediately. He volunteered that Mr Drummond had seemed 'stressed' on the Friday afternoon, mentioning a phone call earlier in the week from someone he described as 'a debt collector' — Mr Thomson did not know the substance of this.",
+      "source": "Recorded statement, 07/11/2022 by PS R. Connor",
+      "timestamp_referenced": "2022-11-04T17:30:00 to 2022-11-07T09:30:00",
+      "location_referenced": "Carnaden",
+      "reliability": "medium",
+      "reliability_note": "Witness account; consistency with other evidence to be assessed.",
+      "chain_of_custody_note": "Recorded statement on file."
+    },
+    {
+      "id": "E013",
+      "type": "financial_record",
+      "title": "Robbie Thomson financial records (subsequently obtained)",
+      "content": "Bank statements obtained under production order PO/2022/4505 for the period 01/08/2022 to 30/11/2022. Account holder: Robbie Thomson. Balance on 04/11/2022 (Friday morning): £237.42. Outstanding credit card balance on same date: £2,140 (limit £2,500). Two short-term loans taken in October 2022 totalling £600, repayments overdue at time of death. Deposit of £200 cash made via ATM in Galashiels on Monday 07/11/2022 at 14:18 (after discovery of body). No further unusual transactions in the recorded period. Source of the £200 cash deposit was not established during the original investigation.",
+      "source": "Bank of Scotland records, production order PO/2022/4505",
+      "timestamp_referenced": "2022-08-01 to 2022-11-30",
+      "location_referenced": "Various",
+      "reliability": "high",
+      "reliability_note": "Banking records obtained under production order; integrity assured.",
+      "chain_of_custody_note": "Digital evidence package CDP/2022/1014."
+    }
+  ]
+}
