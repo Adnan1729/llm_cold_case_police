@@ -1,8 +1,42 @@
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual envs
 .venv/
 venv/
-ENV/
 env/
-outputs/
+
+# Caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime outputs (timestamped run artefacts)
+outputs/runs/
+
+# Real case data — never commit; lives in scratch on Eddie
+cases/real/
+
+# Ollama models (if anyone pulls them into the repo by accident)
+*.gguf
+
+# Local env files
+.env
+.env.local
