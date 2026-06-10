@@ -1,0 +1,40 @@
+You are reviewing a cold case. Below is the case narrative followed by
+the structured evidence available.
+
+================ CASE NARRATIVE ================
+
+{{ case.narrative }}
+
+================ EVIDENCE ================
+
+{% for item in evidence %}
+[{{ item.id }}] {{ item.title }}
+Type: {{ item.type }} | Reliability: {{ item.reliability }} ({{ item.reliability_note }})
+Time: {{ item.timestamp_referenced or 'N/A' }} | Location: {{ item.location_referenced or 'N/A' }}
+
+{{ item.content }}
+
+{% endfor %}
+
+================ TASK ================
+
+Generate up to {{ max_hypotheses }} plausible hypotheses explaining the case.
+Include at least one hypothesis for each viable person of interest, plus a
+hypothesis involving an unknown third party if the evidence permits.
+
+For each hypothesis:
+- Unique ID (H1, H2, H3, ...).
+- one_line_summary (≤ 240 characters).
+- narrative: 200–400 words grounded in specific evidence IDs.
+- actors: persons named in the hypothesis with their roles.
+- timeline: events in sequence, grounded in evidence where possible.
+- evidence_support: for every evidence item that bears on the hypothesis,
+  one entry stating supports / contradicts / neutral, with weight and note.
+- unexplained_evidence: evidence IDs the hypothesis cannot account for.
+- is_exculpatory: true only if the hypothesis primarily exculpates a named
+  person of interest.
+- confidence_score: null.
+- rank: null.
+- agent_scores: empty list [].
+
+Output: { "hypotheses": [<Hypothesis>, ...] }

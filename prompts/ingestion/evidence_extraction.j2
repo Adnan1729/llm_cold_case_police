@@ -1,0 +1,13 @@
+Extract every discrete piece of evidence from the following case material
+into structured EvidenceCard objects.
+
+================ CASE MATERIAL ================
+
+{{ raw_text }}
+
+================ END OF CASE MATERIAL ================
+
+Produce a JSON object with a single key `evidence_items` whose value is a
+JSON array of EvidenceCard objects, one per discrete piece of evidence in
+the material. Do not include any commentary, preamble, or text outside the
+JSON object.

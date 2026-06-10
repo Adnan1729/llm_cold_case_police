@@ -1,0 +1,42 @@
+Critique the following hypotheses for a cold-case investigation.
+
+================ CASE NARRATIVE ================
+
+{{ case.narrative }}
+
+================ EVIDENCE ================
+
+{% for item in evidence %}
+[{{ item.id }}] {{ item.title }} ({{ item.reliability }})
+{{ item.content }}
+
+{% endfor %}
+
+================ HYPOTHESES TO CRITIQUE ================
+
+{% for h in hypotheses %}
+[{{ h.id }}] {{ h.one_line_summary }}
+
+Narrative:
+{{ h.narrative }}
+
+Evidence support claimed:
+{% for es in h.evidence_support %}
+- {{ es.evidence_id }}: {{ es.role }} (weight {{ es.weight }}){% if es.note %} — {{ es.note }}{% endif %}
+{% endfor %}
+
+Unexplained evidence: {{ h.unexplained_evidence | join(', ') if h.unexplained_evidence else 'none claimed' }}
+
+{% endfor %}
+
+================ TASK ================
+
+For each hypothesis, produce a HypothesisCritique with:
+- hypothesis_id
+- strengths (1–3 items)
+- weaknesses (1–5 items, each referencing specific evidence IDs)
+- overlooked_evidence: evidence IDs the hypothesis fails to address
+- suggested_revisions: concrete revisions the Investigator should consider
+- overall_assessment: 2–4 sentence narrative judgement
+
+Output: { "critiques": [<HypothesisCritique>, ...] }

@@ -121,12 +121,23 @@ class Hypothesis(BaseModel):
         default_factory=list,
         description="Per-agent confidence scores from the consortium debate.",
     )
-    confidence_score: float = Field(
-        ...,
+    # confidence_score: float = Field(
+    #     ...,
+    #     ge=0.0,
+    #     le=1.0,
+    #     description="Aggregated confidence after weighted aggregation across agents.",
+    # )
+    
+    confidence_score: Optional[float] = Field(
+        None,
         ge=0.0,
         le=1.0,
-        description="Aggregated confidence after weighted aggregation across agents.",
+        description=(
+            "Aggregated confidence after weighted aggregation across agents. "
+            "None during generation and critique; set by the aggregator."
+        ),
     )
+
     rank: Optional[int] = Field(
         None,
         ge=1,

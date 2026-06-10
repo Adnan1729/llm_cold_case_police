@@ -24,6 +24,14 @@ from consortium.schemas.hypothesis import (
     SupportRole,
 )
 
+from consortium.schemas.debate import (
+    CritiqueBundle,
+    HypothesisCritique,
+    HypothesisGenerationOutput,
+    HypothesisScore,
+    ScoreBundle,
+)
+
 # # Change these absolute imports to relative imports:
 # from .case import Case, CaseMetadata, Incident, Victim
 # from .ceg import (
@@ -70,4 +78,10 @@ __all__ = [
     "HypothesisEvent",
     "RankedHypotheses",
     "SupportRole",
+    # debate
+    "CritiqueBundle",
+    "HypothesisCritique",
+    "HypothesisGenerationOutput",
+    "HypothesisScore",
+    "ScoreBundle",
 ]

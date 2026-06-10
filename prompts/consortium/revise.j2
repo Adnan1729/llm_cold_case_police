@@ -1,0 +1,54 @@
+You are revising your initial hypotheses based on critiques from your team.
+
+You may:
+- Modify the narrative or evidence_support of an existing hypothesis.
+- Remove a hypothesis if critiques have convinced you it is not viable.
+- Add a new hypothesis if critiques surfaced one you missed.
+
+You should NOT:
+- Change an existing hypothesis ID; preserve continuity.
+- Dismiss a substantive critique without addressing it in the revised narrative.
+
+================ CASE NARRATIVE ================
+
+{{ case.narrative }}
+
+================ EVIDENCE ================
+
+{% for item in evidence %}
+[{{ item.id }}] {{ item.title }}
+{{ item.content }}
+
+{% endfor %}
+
+================ CURRENT HYPOTHESES ================
+
+{% for h in hypotheses %}
+[{{ h.id }}] {{ h.one_line_summary }}
+
+{{ h.narrative }}
+
+{% endfor %}
+
+================ CRITIQUES ================
+
+{% for critic_name, critiques in critiques_by_critic.items() %}
+--- From {{ critic_name }} ---
+
+{% for c in critiques %}
+On {{ c.hypothesis_id }}:
+  Strengths: {{ c.strengths | join('; ') }}
+  Weaknesses: {{ c.weaknesses | join('; ') }}
+  Overlooked evidence: {{ c.overlooked_evidence | join(', ') }}
+  Suggested revisions: {{ c.suggested_revisions | join('; ') }}
+  Overall: {{ c.overall_assessment }}
+
+{% endfor %}
+{% endfor %}
+
+================ TASK ================
+
+Produce a revised set of hypotheses in the same shape as before. Keep IDs
+stable. Set confidence_score and rank to null. Leave agent_scores empty.
+
+Output: { "hypotheses": [<Hypothesis>, ...] }
