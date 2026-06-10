@@ -1,0 +1,39 @@
+# POC default pipeline configuration.
+#
+# All agents use Ollama as the LLM backend. Swap `model` per agent to
+# change models without touching code. Mid-size models are recommended;
+# 7-8B class is the default for development.
+
+ollama_host: http://localhost:11434
+
+investigator:
+  name: investigator
+  role: investigator
+  model: llama3.1:8b
+  system_prompt_template: system/investigator.j2
+  weight: 1.0
+  default_max_tokens: 4096
+
+critics:
+  - name: forensic_analyst
+    role: critic
+    model: qwen2.5:7b
+    system_prompt_template: system/forensic_analyst.j2
+    weight: 1.0
+    default_max_tokens: 4096
+
+  - name: devils_advocate
+    role: critic
+    model: mistral:7b
+    system_prompt_template: system/devils_advocate.j2
+    weight: 1.0
+    default_max_tokens: 4096
+
+ceg_generator:
+  model: deepseek-r1:7b   # reasoning model recommended for CEG
+  default_max_tokens: 4096
+
+pipeline:
+  max_hypotheses: 6
+  orchestrator: phased
+  run_ceg_stage: true
