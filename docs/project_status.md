@@ -1,11 +1,11 @@
-# Cold-Case LLM Consortium — POC Status
+# Cold-Case LLM Consortium: POC Status
 
-**Date:** June 11, 2026
-**Time:** 02:21
+**Date:** June 11, 2026 <br>
+**Time:** 02:21 <br>
 **Project:** End-to-end POC: LLM consortium for cold-case hypothesis
-generation and Chain Event Graph construction
-**Partners:** University of Edinburgh, Police Scotland
-**Status:** Pipeline running end-to-end on local hardware against open-weights model
+generation and Chain Event Graph construction <br>
+**Partners:** University of Edinburgh, Police Scotland <br>
+**Status:** Pipeline running end-to-end on local hardware against open-weights model <br>
 
 ## 1. What the POC sets out to demonstrate
 
