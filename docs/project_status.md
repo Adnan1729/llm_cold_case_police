@@ -176,14 +176,3 @@ piece of software. Concrete questions it can address:
   via Police Scotland feedback).
 - Operational deployment design (secure enclave, audit requirements,
   disclosure framework).
-
-## 8. Outstanding questions for supervisor
-
-1. Are we positioning this work for a specific publication venue, and
-   if so, what should the evaluation rigor look like to be credible
-   there?
-2. What's the right next conversation with Police Scotland — a status
-   update, a working demo, or both?
-3. Is there bandwidth to bring in a research assistant or collaborator
-   for the evaluation and benchmarking work, which is the most
-   labour-intensive part ahead?
