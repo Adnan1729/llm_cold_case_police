@@ -32,7 +32,7 @@ Thumbs.db
 outputs/runs/
 
 # Real case data — never commit; lives in scratch on Eddie
-cases/real/
+#cases/real/
 
 # Ollama models (if anyone pulls them into the repo by accident)
 *.gguf
