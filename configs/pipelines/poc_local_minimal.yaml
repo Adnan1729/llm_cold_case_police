@@ -1,0 +1,37 @@
+# Local CPU configuration. Uses one small model for all roles to keep
+# memory and load time minimal. Once verified, swap critic models for
+# epistemic diversity (qwen2.5:3b, phi3.5:3.8b, etc.).
+
+ollama_host: http://localhost:11434
+
+investigator:
+  name: investigator
+  role: investigator
+  model: llama3.2:3b
+  system_prompt_template: system/investigator.j2
+  weight: 1.0
+  default_max_tokens: 2048
+
+critics:
+  - name: forensic_analyst
+    role: critic
+    model: llama3.2:3b
+    system_prompt_template: system/forensic_analyst.j2
+    weight: 1.0
+    default_max_tokens: 2048
+
+  - name: devils_advocate
+    role: critic
+    model: llama3.2:3b
+    system_prompt_template: system/devils_advocate.j2
+    weight: 1.0
+    default_max_tokens: 2048
+
+ceg_generator:
+  model: llama3.2:3b
+  default_max_tokens: 2048
+
+pipeline:
+  max_hypotheses: 4    # smaller set for faster CPU runs
+  orchestrator: phased
+  run_ceg_stage: true

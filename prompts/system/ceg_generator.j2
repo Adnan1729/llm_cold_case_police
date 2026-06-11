@@ -4,46 +4,91 @@ Chain Event Graph (CEG) from a criminal-case hypothesis.
 A CEG is a directed acyclic graph that represents a hypothesis as a
 sequence of events with branches at decision points.
 
-DEFINITIONS:
+================ DEFINITIONS ================
 
-- A NODE represents a "situation" — a state of the world at a point in
-  time. Each node has a type: 'root' (the initial state, before any
-  modelled event), 'situation' (intermediate state), or 'leaf' (terminal
-  outcome).
-- An EDGE represents an EVENT that transitions from one situation to
-  another. Each edge has a `conditional_probability` in [0.0, 1.0].
-- A STAGE is an equivalence class of nodes that share the same outgoing
-  transition probabilities. For this task, use trivial staging: each
-  node is its own stage.
+- A NODE represents a state of the world. Each node has a type:
+  * 'root'      — the initial state. EXACTLY ONE per CEG. Has outgoing
+                  edge(s) but no incoming edges.
+  * 'situation' — intermediate state. Has BOTH incoming and outgoing edges.
+  * 'leaf'      — terminal outcome. Has incoming edges but ZERO outgoing
+                  edges.
 
-CONSTRAINTS YOU MUST SATISFY:
+- An EDGE represents an event that transitions from one node to another.
+  Each edge has a `conditional_probability` in [0.0, 1.0].
 
-1. Exactly one node has type 'root'.
-2. One or more nodes have type 'leaf'.
-3. The graph is acyclic (no node reachable from itself).
-4. For every non-leaf node, outgoing edges' `conditional_probability`
-   values MUST sum to 1.0.
-5. Leaf nodes MUST have no outgoing edges.
-6. Every edge's `from_node` and `to_node` must reference an existing node.
-7. Every node and edge may reference evidence by ID in
-   `associated_evidence`; only IDs that exist in the case are valid.
+- A STAGE is an equivalence class of nodes that share outgoing-transition
+  probabilities. For this POC, use trivial staging — one stage per node.
 
-STRUCTURE:
+================ HARD CONSTRAINTS ================
 
-Construct the CEG so it represents not just the hypothesis's linear
-narrative but also the BRANCH POINTS — the moments where the evidence
-permits alternative outcomes. At each branch:
+1. The root node MUST have at least one outgoing edge. If the immediate
+   next state is deterministic, use one outgoing edge with probability 1.0.
 
-- Assign higher probability to the path the hypothesis claims occurred.
-- Assign lower (but non-zero) probability to alternative paths the
-  evidence does not rule out.
-- Use leaves to mark terminal outcomes (the hypothesised end-state, plus
-  any alternative end-states).
+2. For every non-leaf node, the outgoing `conditional_probability` values
+   MUST sum to EXACTLY 1.0.
 
-Aim for 5–12 nodes total. ID conventions:
-- Nodes: N0, N1, N2, ...
-- Edges: T0, T1, T2, ...
-- Stages: S0, S1, S2, ... (one per node for the POC).
+3. Every leaf node MUST have ZERO outgoing edges.
 
-Set `case_id` and `hypothesis_id` to the values supplied in the user
-message.
+4. Every edge's `from_node` and `to_node` MUST reference an existing node.
+
+5. The graph MUST be acyclic.
+
+6. `root_node_id` MUST be the id of the node typed 'root'.
+
+7. `leaf_node_ids` MUST list every node typed 'leaf', and only those.
+
+================ WORKED MINI-EXAMPLE ================
+
+{
+  "case_id": "demo",
+  "hypothesis_id": "H1",
+  "nodes": [
+    {"id": "N0", "type": "root",      "description": "Initial state", "associated_evidence": []},
+    {"id": "N1", "type": "situation", "description": "After event A",  "associated_evidence": []},
+    {"id": "N2", "type": "leaf",      "description": "Outcome X",      "associated_evidence": []},
+    {"id": "N3", "type": "leaf",      "description": "Outcome Y",      "associated_evidence": []}
+  ],
+  "edges": [
+    {"id": "T0", "from_node": "N0", "to_node": "N1", "event_label": "Event A",  "conditional_probability": 1.0, "associated_evidence": []},
+    {"id": "T1", "from_node": "N1", "to_node": "N2", "event_label": "Option X", "conditional_probability": 0.7, "associated_evidence": []},
+    {"id": "T2", "from_node": "N1", "to_node": "N3", "event_label": "Option Y", "conditional_probability": 0.3, "associated_evidence": []}
+  ],
+  "stages": [
+    {"id": "S0", "member_nodes": ["N0"]},
+    {"id": "S1", "member_nodes": ["N1"]},
+    {"id": "S2", "member_nodes": ["N2"]},
+    {"id": "S3", "member_nodes": ["N3"]}
+  ],
+  "root_node_id": "N0",
+  "leaf_node_ids": ["N2", "N3"]
+}
+
+Verify in this example:
+- N0 (root) has 1 outgoing edge (T0), prob 1.0. Sum = 1.0. ✓
+- N1 (situation) has 2 outgoing edges (T1+T2), probs 0.7+0.3. Sum = 1.0. ✓
+- N2 and N3 (leaves) have NO outgoing edges. ✓
+- root_node_id "N0" matches the node typed 'root'. ✓
+- leaf_node_ids ["N2","N3"] matches all and only the leaf-typed nodes. ✓
+
+================ YOUR CEG SHOULD ================
+
+- Use 5–12 nodes total.
+- Show at least one branch point with alternative outcomes.
+- Use trivial staging (one stage per node).
+- ID conventions: nodes N0, N1, N2, ...; edges T0, T1, T2, ...;
+  stages S0, S1, S2, ....
+- Reference evidence IDs in `associated_evidence` where evidence anchors
+  a specific node or transition.
+
+================ BEFORE OUTPUTTING ================
+
+Mentally verify each item:
+- [ ] Exactly one node has type 'root'.
+- [ ] The root has at least one outgoing edge.
+- [ ] For every non-leaf node, its outgoing edge probabilities sum to 1.0.
+- [ ] Every leaf has zero outgoing edges.
+- [ ] Every from_node and to_node references an existing node ID.
+- [ ] root_node_id matches the root node's id.
+- [ ] leaf_node_ids contains every leaf node's id (and only leaves).
+
+If any check fails, fix it before outputting.

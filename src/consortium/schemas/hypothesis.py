@@ -66,7 +66,9 @@ class EvidenceSupport(BaseModel):
         ...,
         ge=0.0,
         le=1.0,
-        description="Strength of the bearing on the hypothesis, regardless of direction.",
+        description=("Magnitude of the evidence's bearing on the hypothesis, in [0.0, 1.0]."
+            "Always non-negative. The direction (supports vs contradicts) is "
+            "captured in the role field, not as a sign on the weight."),
     )
     note: Optional[str] = Field(
         None,

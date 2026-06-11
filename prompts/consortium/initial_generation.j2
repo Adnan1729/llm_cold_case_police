@@ -23,18 +23,41 @@ Include at least one hypothesis for each viable person of interest, plus a
 hypothesis involving an unknown third party if the evidence permits.
 
 For each hypothesis:
-- Unique ID (H1, H2, H3, ...).
-- one_line_summary (≤ 240 characters).
+- id: unique (H1, H2, H3, ...).
+- one_line_summary: ≤ 240 characters.
 - narrative: 200–400 words grounded in specific evidence IDs.
 - actors: persons named in the hypothesis with their roles.
 - timeline: events in sequence, grounded in evidence where possible.
-- evidence_support: for every evidence item that bears on the hypothesis,
-  one entry stating supports / contradicts / neutral, with weight and note.
+- evidence_support: see schema below.
 - unexplained_evidence: evidence IDs the hypothesis cannot account for.
 - is_exculpatory: true only if the hypothesis primarily exculpates a named
   person of interest.
 - confidence_score: null.
 - rank: null.
 - agent_scores: empty list [].
+
+================ EvidenceSupport schema (read carefully) ================
+
+Each EvidenceSupport entry has FOUR fields:
+- evidence_id: the evidence ID, e.g. "E001".
+- role: EXACTLY one of "supports", "contradicts", "neutral".
+- weight: a number IN THE RANGE [0.0, 1.0]. ALWAYS NON-NEGATIVE.
+  The weight is the MAGNITUDE of the bearing — how STRONGLY the evidence
+  matters — regardless of direction. NEVER use a negative weight. The
+  direction (supports vs contradicts) is already captured in the role field.
+- note: brief explanation (optional).
+
+Examples — note that contradicting evidence still uses a POSITIVE weight:
+
+  {"evidence_id": "E003", "role": "supports", "weight": 0.85,
+   "note": "CCTV places subject at scene at relevant time"}
+
+  {"evidence_id": "E007", "role": "contradicts", "weight": 0.90,
+   "note": "Cell tower data places subject elsewhere — strong alibi"}
+
+  {"evidence_id": "E011", "role": "neutral", "weight": 0.20,
+   "note": "Partial fingerprint unmatched; bearing on hypothesis unclear"}
+
+================ OUTPUT ================
 
 Output: { "hypotheses": [<Hypothesis>, ...] }

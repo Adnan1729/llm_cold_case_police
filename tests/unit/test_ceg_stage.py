@@ -110,12 +110,36 @@ def test_generate_ceg_includes_system_and_user_messages():
 
 
 def test_generate_ceg_raises_when_invalid_and_validate_true():
+    """With retries disabled, an invalid CEG raises immediately."""
     client = MockClient(structured_responses=[_invalid_ceg()])
     with pytest.raises(CEGValidationError):
-        generate_ceg(_case(), _hypothesis(), client)
+        generate_ceg(
+            _case(), _hypothesis(), client, max_structural_retries=0
+        )
 
 
 def test_generate_ceg_skips_validation_when_validate_false():
+    """Skipping validation accepts any CEG, including structurally invalid ones."""
     client = MockClient(structured_responses=[_invalid_ceg()])
-    result = generate_ceg(_case(), _hypothesis(), client, validate=False)
+    result = generate_ceg(
+        _case(), _hypothesis(), client, validate=False
+    )
     assert result.case_id == "c1"
+
+
+def test_generate_ceg_retries_structural_failure_and_succeeds_on_valid():
+    """First call returns invalid CEG, retry returns valid; generate_ceg succeeds."""
+    client = MockClient(
+        structured_responses=[_invalid_ceg(), _valid_ceg()]
+    )
+    result = generate_ceg(_case(), _hypothesis(), client)
+    assert result.case_id == "c1"
+
+
+def test_generate_ceg_raises_after_exhausting_structural_retries():
+    """If all retries return invalid CEGs, the final CEGValidationError is raised."""
+    client = MockClient(
+        structured_responses=[_invalid_ceg(), _invalid_ceg(), _invalid_ceg()]
+    )
+    with pytest.raises(CEGValidationError, match="3 attempt"):
+        generate_ceg(_case(), _hypothesis(), client)

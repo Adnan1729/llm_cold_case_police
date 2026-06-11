@@ -46,6 +46,16 @@ On {{ c.hypothesis_id }}:
 {% endfor %}
 {% endfor %}
 
+================ EvidenceSupport schema reminder ================
+
+Each EvidenceSupport entry has FOUR fields:
+- evidence_id: e.g. "E001".
+- role: EXACTLY one of "supports", "contradicts", "neutral".
+- weight: a number IN THE RANGE [0.0, 1.0]. ALWAYS NON-NEGATIVE. The
+  direction (supports vs contradicts) is captured in the role field, NOT
+  as a sign on the weight. NEVER use a negative weight.
+- note: brief explanation (optional).
+
 ================ TASK ================
 
 Produce a revised set of hypotheses in the same shape as before. Keep IDs
