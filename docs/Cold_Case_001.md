@@ -143,7 +143,7 @@ The CEG was generated for H1. It contains five nodes (one root, two
 situation nodes, two leaves) and five edges. Figure 1 shows the rendered
 graph.
 
-![Chain Event Graph for hypothesis H1](../outputs/runs/20260611_042756_cold_case_001/ceg.svg)
+![Chain Event Graph for hypothesis H1](figures/cold_case_001_ceg_h1.svg)
 
 **Figure 1.** Chain Event Graph for hypothesis H1 ("Calum Sinclair's
 alibi is shaky"). Nodes are states of the world; edges are events
