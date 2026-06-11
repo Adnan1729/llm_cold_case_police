@@ -1,4 +1,4 @@
-# Cold Case LLM Consortium — End-to-End Walkthrough
+# Cold Case LLM Consortium: End-to-End Walkthrough
 **Worked example: Cold Case 001, the Carnaden Antiques Shop Killing**
 
 ## 1. Purpose
