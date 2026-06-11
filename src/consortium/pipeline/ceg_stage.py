@@ -1,8 +1,9 @@
-"""CEG generation stage with structural-validation retry."""
+"""CEG generation stage with repair and structural-validation retry."""
 from __future__ import annotations
 
 from typing import Optional
 
+from consortium.ceg.repair import normalize_outgoing_probabilities
 from consortium.ceg.validator import (
     CEGValidationError,
     validate_ceg_evidence_grounding,
@@ -29,18 +30,17 @@ def generate_ceg(
     probability_tolerance: float = 1e-4,
     max_structural_retries: int = 2,
 ) -> ChainEventGraph:
-    """Generate a CEG from a hypothesis with two layers of retry.
+    """Generate a CEG from a hypothesis with repair + retry.
 
-    Layer 1 (inside `client.chat_structured`): retries on JSON parse
-    errors or Pydantic schema validation failures.
-
-    Layer 2 (here): retries on structural validation failures — graph
-    constraints that Pydantic can't enforce (probabilities summing to 1,
-    orphaned nodes, leaves with outgoing edges, etc.).
-
-    When a structural failure occurs and retries remain, the failed CEG
-    is fed back to the model along with the list of structural problems,
-    so the model can correct itself.
+    Each attempt:
+    1. Calls the LLM (which has its own JSON/schema retry inside).
+    2. Repair pass: normalises outgoing probabilities to sum to 1.0
+       where the model's arithmetic was close but not exact.
+    3. Structural validation: catches issues repair can't fix
+       (orphaned nodes, leaves with outgoing edges, dangling edge
+       references, cycles).
+    4. If still invalid and retries remain, the failed CEG and
+       structural problems are fed back to the model for another attempt.
     """
     system = render_template(system_prompt_template)
     user = render_template(
@@ -65,6 +65,25 @@ def generate_ceg(
             temperature=temperature,
             max_tokens=max_tokens,
         )
+
+        # Repair pass: normalise probabilities.
+        ceg, repair_report = normalize_outgoing_probabilities(
+            ceg, tolerance=probability_tolerance
+        )
+        if logger and not repair_report.is_empty():
+            logger.event(
+                "ceg_probabilities_normalized",
+                attempt=attempt + 1,
+                normalizations=[
+                    {
+                        "node_id": r.node_id,
+                        "original_sum": r.original_sum,
+                        "edge_count": r.edge_count,
+                        "edge_ids": r.edge_ids,
+                    }
+                    for r in repair_report.normalizations
+                ],
+            )
 
         if not validate:
             return ceg
@@ -103,17 +122,14 @@ def generate_ceg(
                         "Your previous CEG had the following structural "
                         "problems:\n"
                         + "\n".join(f"- {p}" for p in problems)
-                        + "\n\nPlease regenerate the CEG. The most common "
-                        "fixes are:\n"
-                        "- Add the missing outgoing edges from any non-leaf "
-                        "  node (every non-leaf needs at least one).\n"
-                        "- Adjust conditional_probability values so the "
-                        "  outgoing edges from each non-leaf node sum to "
-                        "  EXACTLY 1.0.\n"
-                        "- Change the type of any leaf that has outgoing "
-                        "  edges to 'situation', OR remove its outgoing "
-                        "  edges if it really is terminal.\n"
-                        "- Ensure root_node_id refers to the node typed 'root'.\n"
+                        + "\n\nPlease regenerate the CEG. Probability sums "
+                        "will be auto-normalised, but other structural "
+                        "constraints must be satisfied:\n"
+                        "- Every non-leaf node must have outgoing edges.\n"
+                        "- Leaf nodes must have NO outgoing edges.\n"
+                        "- Every edge must reference existing node IDs.\n"
+                        "- The graph must be acyclic.\n"
+                        "- root_node_id must refer to the node typed 'root'.\n"
                         "\nOutput ONLY the corrected ChainEventGraph JSON."
                     ),
                 ),

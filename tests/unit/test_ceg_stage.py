@@ -71,7 +71,7 @@ def _valid_ceg() -> ChainEventGraph:
 
 
 def _invalid_ceg() -> ChainEventGraph:
-    """Probability sum violation."""
+    """Has a dangling edge — not repairable by normalization."""
     return ChainEventGraph(
         case_id="c1",
         hypothesis_id="H1",
@@ -80,14 +80,13 @@ def _invalid_ceg() -> ChainEventGraph:
             CEGNode(id="N1", type=CEGNodeType.LEAF, description="end"),
         ],
         edges=[
-            CEGEdge(id="T0", from_node="N0", to_node="N1",
-                    event_label="event", conditional_probability=0.5),
+            CEGEdge(id="T0", from_node="N0", to_node="N99",
+                    event_label="dangling", conditional_probability=1.0),
         ],
         stages=[],
         root_node_id="N0",
         leaf_node_ids=["N1"],
     )
-
 
 def test_generate_ceg_returns_validated_ceg():
     client = MockClient(structured_responses=[_valid_ceg()])
@@ -143,3 +142,24 @@ def test_generate_ceg_raises_after_exhausting_structural_retries():
     )
     with pytest.raises(CEGValidationError, match="3 attempt"):
         generate_ceg(_case(), _hypothesis(), client)
+
+def test_generate_ceg_normalizes_imperfect_probabilities():
+    """Probabilities that don't sum to 1 are repaired without needing retry."""
+    ceg_with_bad_prob = ChainEventGraph(
+        case_id="c1",
+        hypothesis_id="H1",
+        nodes=[
+            CEGNode(id="N0", type=CEGNodeType.ROOT, description="start"),
+            CEGNode(id="N1", type=CEGNodeType.LEAF, description="end"),
+        ],
+        edges=[
+            CEGEdge(id="T0", from_node="N0", to_node="N1",
+                    event_label="event", conditional_probability=0.5),
+        ],
+        stages=[],
+        root_node_id="N0",
+        leaf_node_ids=["N1"],
+    )
+    client = MockClient(structured_responses=[ceg_with_bad_prob])
+    result = generate_ceg(_case(), _hypothesis(), client)
+    assert result.edges[0].conditional_probability == 1.0
