@@ -49,7 +49,7 @@ not autonomous decision-making.
 ### Install
 
 ```bash
-git clone <repo-url>
+git clone [https://github.com/Adnan1729/llm_cold_case_police.git](https://github.com/Adnan1729/llm_cold_case_police.git)
 cd llm_cold_case_police
 python -m venv .venv
 source .venv/Scripts/activate    # Git Bash on Windows
