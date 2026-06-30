@@ -1,0 +1,54 @@
+Construct an Event Tree for the following top-ranked hypothesis.
+
+================ CASE ================
+
+Case ID: {{ case.metadata.case_id }}
+Case name: {{ case.metadata.case_name }}
+
+{{ case.narrative }}
+
+================ EVIDENCE ================
+
+{% for item in evidence %}
+[{{ item.id }}] {{ item.title }}
+{{ item.content[:300] }}{% if item.content|length > 300 %}...{% endif %}
+
+{% endfor %}
+
+================ HYPOTHESIS TO MATERIALISE ================
+
+Hypothesis ID: {{ hypothesis.id }}
+Summary: {{ hypothesis.one_line_summary }}
+Aggregated confidence: {{ hypothesis.confidence_score }}
+
+Narrative:
+{{ hypothesis.narrative }}
+
+Timeline:
+{% for e in hypothesis.timeline %}
+  {{ e.sequence_index }}. {% if e.timestamp %}({{ e.timestamp }}){% endif %} {{ e.description }}
+    Supporting evidence: {{ e.supporting_evidence | join(', ') if e.supporting_evidence else 'none' }}
+{% endfor %}
+
+Evidence support claimed by this hypothesis:
+{% for es in hypothesis.evidence_support %}
+- {{ es.evidence_id }}: {{ es.role }} (weight {{ es.weight }}){% if es.note %} — {{ es.note }}{% endif %}
+{% endfor %}
+
+Unexplained evidence: {{ hypothesis.unexplained_evidence | join(', ') if hypothesis.unexplained_evidence else 'none' }}
+
+================ TASK ================
+
+Produce an EventTree JSON object with:
+- case_id: "{{ case.metadata.case_id }}"
+- hypothesis_id: "{{ hypothesis.id }}"
+- nodes: 5–12 EventTreeNode objects (root + branches + terminal outcomes).
+- edges: EventTreeEdge objects forming a tree. Outgoing probabilities
+  from each non-leaf node must sum to 1.0.
+- root_node_id: the ID of the single root node.
+
+Reference evidence IDs (E001, E002, ...) in `associated_evidence` on
+nodes and edges where the evidence anchors that part of the tree.
+
+Include at least one genuine branch point where the evidence permits an
+alternative outcome with non-zero probability.
