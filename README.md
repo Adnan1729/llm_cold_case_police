@@ -97,7 +97,6 @@ is skipped if Graphviz isn't on PATH; that's expected.
 
 ## Repository layout
 
-.
 ├── cases/toy/                  # Synthetic cold cases for development
 │   └── cold_case_001/          # The Carnaden Antiques Shop Killing
 ├── configs/pipelines/          # YAML pipeline configurations
