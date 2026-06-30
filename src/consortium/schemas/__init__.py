@@ -32,6 +32,13 @@ from consortium.schemas.debate import (
     ScoreBundle,
 )
 
+# Add to the imports block (alphabetical with existing imports):
+from consortium.schemas.event_tree import (
+    EventTree,
+    EventTreeEdge,
+    EventTreeNode,
+)
+
 # # Change these absolute imports to relative imports:
 # from .case import Case, CaseMetadata, Incident, Victim
 # from .ceg import (
@@ -84,4 +91,8 @@ __all__ = [
     "HypothesisGenerationOutput",
     "HypothesisScore",
     "ScoreBundle",
-]
+    # event tree
+    "EventTree",
+    "EventTreeEdge",
+    "EventTreeNode",
+]     

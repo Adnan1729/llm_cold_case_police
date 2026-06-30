@@ -1,21 +1,25 @@
-"""Tests for the CEG generation stage."""
+"""Tests for the CEG generation stage (event-tree pipeline)."""
 from __future__ import annotations
 
 import pytest
 
-from consortium.ceg.validator import CEGValidationError
+pytest.importorskip("cegpy")
+
+from consortium.ceg.event_tree_validator import EventTreeValidationError
+from consortium.ceg.validator import validate_ceg_structure
 from consortium.clients import MockClient
 from consortium.pipeline.ceg_stage import generate_ceg
 from consortium.schemas.case import Case, CaseMetadata
-from consortium.schemas.ceg import (
-    CEGEdge,
-    CEGNode,
-    CEGNodeType,
-    ChainEventGraph,
+from consortium.schemas.event_tree import (
+    EventTree,
+    EventTreeEdge,
+    EventTreeNode,
 )
 from consortium.schemas.evidence import EvidenceCard, EvidenceType, Reliability
 from consortium.schemas.hypothesis import EvidenceSupport, Hypothesis, SupportRole
 
+
+# --- Fixtures ---
 
 def _case() -> Case:
     return Case(
@@ -25,12 +29,9 @@ def _case() -> Case:
             EvidenceCard(
                 id="E001",
                 type=EvidenceType.WITNESS_STATEMENT,
-                title="W",
-                content="content",
-                source="src",
+                title="W", content="content", source="src",
                 reliability=Reliability.MEDIUM,
-                reliability_note="n",
-                chain_of_custody_note="n",
+                reliability_note="n", chain_of_custody_note="n",
             ),
         ],
     )
@@ -52,114 +53,131 @@ def _hypothesis() -> Hypothesis:
     )
 
 
-def _valid_ceg() -> ChainEventGraph:
-    return ChainEventGraph(
-        case_id="c1",
-        hypothesis_id="H1",
+def _valid_tree() -> EventTree:
+    """Minimal valid 2-node tree."""
+    return EventTree(
+        case_id="c1", hypothesis_id="H1",
         nodes=[
-            CEGNode(id="N0", type=CEGNodeType.ROOT, description="start"),
-            CEGNode(id="N1", type=CEGNodeType.LEAF, description="end"),
+            EventTreeNode(id="N0", description="start"),
+            EventTreeNode(id="N1", description="end"),
         ],
         edges=[
-            CEGEdge(id="T0", from_node="N0", to_node="N1",
-                    event_label="event", conditional_probability=1.0),
+            EventTreeEdge(id="T0", from_node="N0", to_node="N1",
+                          event_label="event", conditional_probability=1.0),
         ],
-        stages=[],
         root_node_id="N0",
-        leaf_node_ids=["N1"],
     )
 
 
-def _invalid_ceg() -> ChainEventGraph:
-    """Has a dangling edge — not repairable by normalization."""
-    return ChainEventGraph(
-        case_id="c1",
-        hypothesis_id="H1",
+def _invalid_tree_dangling_edge() -> EventTree:
+    """Dangling edge — cannot be auto-repaired."""
+    return EventTree(
+        case_id="c1", hypothesis_id="H1",
         nodes=[
-            CEGNode(id="N0", type=CEGNodeType.ROOT, description="start"),
-            CEGNode(id="N1", type=CEGNodeType.LEAF, description="end"),
+            EventTreeNode(id="N0", description="start"),
+            EventTreeNode(id="N1", description="end"),
         ],
         edges=[
-            CEGEdge(id="T0", from_node="N0", to_node="N99",
-                    event_label="dangling", conditional_probability=1.0),
+            EventTreeEdge(id="T0", from_node="N0", to_node="N99",
+                          event_label="dangling", conditional_probability=1.0),
         ],
-        stages=[],
         root_node_id="N0",
-        leaf_node_ids=["N1"],
     )
+
+
+# --- Tests ---
 
 def test_generate_ceg_returns_validated_ceg():
-    client = MockClient(structured_responses=[_valid_ceg()])
-    result = generate_ceg(_case(), _hypothesis(), client)
-    assert result.case_id == "c1"
-    assert result.hypothesis_id == "H1"
+    client = MockClient(structured_responses=[_valid_tree()])
+    ceg = generate_ceg(_case(), _hypothesis(), client)
+    assert ceg.case_id == "c1"
+    assert ceg.hypothesis_id == "H1"
+    assert validate_ceg_structure(ceg) == []
 
 
-def test_generate_ceg_calls_llm_with_chain_event_graph_schema():
-    client = MockClient(structured_responses=[_valid_ceg()])
+def test_generate_ceg_calls_llm_with_event_tree_schema():
+    client = MockClient(structured_responses=[_valid_tree()])
     generate_ceg(_case(), _hypothesis(), client)
-    assert client.call_log[0]["schema"] == "ChainEventGraph"
+    assert client.call_log[0]["schema"] == "EventTree"
 
 
 def test_generate_ceg_includes_system_and_user_messages():
-    client = MockClient(structured_responses=[_valid_ceg()])
+    client = MockClient(structured_responses=[_valid_tree()])
     generate_ceg(_case(), _hypothesis(), client)
     roles = [m["role"] for m in client.call_log[0]["messages"]]
     assert roles == ["system", "user"]
 
 
-def test_generate_ceg_raises_when_invalid_and_validate_true():
-    """With retries disabled, an invalid CEG raises immediately."""
-    client = MockClient(structured_responses=[_invalid_ceg()])
-    with pytest.raises(CEGValidationError):
+def test_generate_ceg_raises_when_invalid_and_no_retries():
+    client = MockClient(structured_responses=[_invalid_tree_dangling_edge()])
+    with pytest.raises(EventTreeValidationError):
         generate_ceg(
             _case(), _hypothesis(), client, max_structural_retries=0
         )
 
 
 def test_generate_ceg_skips_validation_when_validate_false():
-    """Skipping validation accepts any CEG, including structurally invalid ones."""
-    client = MockClient(structured_responses=[_invalid_ceg()])
-    result = generate_ceg(
-        _case(), _hypothesis(), client, validate=False
-    )
-    assert result.case_id == "c1"
-
-
-def test_generate_ceg_retries_structural_failure_and_succeeds_on_valid():
-    """First call returns invalid CEG, retry returns valid; generate_ceg succeeds."""
-    client = MockClient(
-        structured_responses=[_invalid_ceg(), _valid_ceg()]
-    )
-    result = generate_ceg(_case(), _hypothesis(), client)
-    assert result.case_id == "c1"
-
-
-def test_generate_ceg_raises_after_exhausting_structural_retries():
-    """If all retries return invalid CEGs, the final CEGValidationError is raised."""
-    client = MockClient(
-        structured_responses=[_invalid_ceg(), _invalid_ceg(), _invalid_ceg()]
-    )
-    with pytest.raises(CEGValidationError, match="3 attempt"):
-        generate_ceg(_case(), _hypothesis(), client)
-
-def test_generate_ceg_normalizes_imperfect_probabilities():
-    """Probabilities that don't sum to 1 are repaired without needing retry."""
-    ceg_with_bad_prob = ChainEventGraph(
-        case_id="c1",
-        hypothesis_id="H1",
+    """validate=False accepts an otherwise-rejected event tree."""
+    # A tree with sums-to-1.0 violation but no dangling edges so the
+    # converter doesn't blow up downstream.
+    bad_sum_tree = EventTree(
+        case_id="c1", hypothesis_id="H1",
         nodes=[
-            CEGNode(id="N0", type=CEGNodeType.ROOT, description="start"),
-            CEGNode(id="N1", type=CEGNodeType.LEAF, description="end"),
+            EventTreeNode(id="N0", description="start"),
+            EventTreeNode(id="N1", description="end"),
         ],
         edges=[
-            CEGEdge(id="T0", from_node="N0", to_node="N1",
-                    event_label="event", conditional_probability=0.5),
+            EventTreeEdge(id="T0", from_node="N0", to_node="N1",
+                          event_label="x", conditional_probability=0.5),
         ],
-        stages=[],
         root_node_id="N0",
-        leaf_node_ids=["N1"],
     )
-    client = MockClient(structured_responses=[ceg_with_bad_prob])
-    result = generate_ceg(_case(), _hypothesis(), client)
-    assert result.edges[0].conditional_probability == 1.0
+    client = MockClient(structured_responses=[bad_sum_tree])
+    ceg = generate_ceg(_case(), _hypothesis(), client, validate=False)
+    # The conversion's normalization pass should still have produced
+    # a structurally valid CEG.
+    assert validate_ceg_structure(ceg) == []
+
+
+def test_generate_ceg_retries_invalid_and_succeeds_on_valid_tree():
+    """First call returns invalid tree, retry returns valid; succeeds."""
+    client = MockClient(
+        structured_responses=[
+            _invalid_tree_dangling_edge(),
+            _valid_tree(),
+        ]
+    )
+    ceg = generate_ceg(_case(), _hypothesis(), client)
+    assert ceg.case_id == "c1"
+
+
+def test_generate_ceg_raises_after_exhausting_retries():
+    client = MockClient(
+        structured_responses=[
+            _invalid_tree_dangling_edge(),
+            _invalid_tree_dangling_edge(),
+            _invalid_tree_dangling_edge(),
+        ]
+    )
+    with pytest.raises(EventTreeValidationError, match="3 attempt"):
+        generate_ceg(_case(), _hypothesis(), client)
+
+
+def test_generate_ceg_propagates_evidence_grounding_errors():
+    """Tree referencing a non-existent evidence ID is rejected."""
+    bad_evidence_tree = EventTree(
+        case_id="c1", hypothesis_id="H1",
+        nodes=[
+            EventTreeNode(id="N0", description="start",
+                          associated_evidence=["E999"]),
+            EventTreeNode(id="N1", description="end"),
+        ],
+        edges=[
+            EventTreeEdge(id="T0", from_node="N0", to_node="N1",
+                          event_label="x", conditional_probability=1.0),
+        ],
+        root_node_id="N0",
+    )
+    client = MockClient(structured_responses=[bad_evidence_tree])
+    with pytest.raises(EventTreeValidationError, match="E999"):
+        generate_ceg(_case(), _hypothesis(), client, max_structural_retries=0)
