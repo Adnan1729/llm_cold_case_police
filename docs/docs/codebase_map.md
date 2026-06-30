@@ -11,6 +11,7 @@ of design decisions, see `docs/architecture.md`.
 
 ## Top-level repository
 
+```text
 .
 ├── cases/                  # Test/development case data
 ├── configs/                # YAML pipeline configurations
@@ -22,7 +23,7 @@ of design decisions, see `docs/architecture.md`.
 ├── tests/                  # Unit and integration tests
 ├── pyproject.toml          # Dependencies, build config
 └── README.md               # Project README (also docs/README.md)
-
+```
 ---
 
 ## src/consortium/ — the package
