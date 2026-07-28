@@ -47,7 +47,7 @@ the architectural refactor of the CEG-generation stage.
 ---
 
 ## 3. The pipeline architecture
-'''
+```text
 ┌──────────────────────────────────┐
     │  Case directory                  │
     │  (case.yaml, narrative.md,       │
@@ -99,7 +99,7 @@ the architectural refactor of the CEG-generation stage.
     │  events.jsonl  (audit log)       │
     │  errors/*.txt  (artefacts)       │
     └──────────────────────────────────┘
-'''
+```
 The change since 11 June is Stage 2. The new pipeline applies the
 neurosymbolic principle twice: structural (LLM produces a strict tree,
 deterministic code converts to CEG) and numerical (deterministic
