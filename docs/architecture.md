@@ -372,3 +372,8 @@ To avoid scope creep, these are out:
 - **Active learning / human-in-the-loop**. Each run is currently a
   one-shot pipeline. Adding investigator feedback into the loop is a
   research project in its own right.
+- **Multimodal preprocessing (PDFs, OCR, vision-LM, ASR)**. Deliberately
+  out of scope for the current research. The pipeline consumes
+  pre-structured EvidenceCard objects authored by hand for synthetic
+  cases. A preprocessing layer could be added as a separate module
+  in future work but is not part of this project's contribution.

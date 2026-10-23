@@ -1,0 +1,11 @@
+case_id: cold_case_102
+title: The Carnaden Antiques Shop Killing
+status: cold
+opened: 2022-11-07
+last_reviewed: 2026-07-31
+jurisdiction: Police Scotland — J Division (Lothians and Scottish Borders)
+notes: >
+  Synthetic case for POC ingestion pipeline testing. Reuses the same
+  scenario as cold_case_001 but with source material (PDFs, audio) as
+  input rather than a hand-authored evidence.json. Intended for
+  ingestion-pipeline evaluation only.

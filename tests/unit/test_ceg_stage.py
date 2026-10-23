@@ -1,5 +1,6 @@
 """Tests for the CEG generation stage (event-tree pipeline)."""
 from __future__ import annotations
+from unittest import case
 
 import pytest
 
@@ -17,6 +18,8 @@ from consortium.schemas.event_tree import (
 )
 from consortium.schemas.evidence import EvidenceCard, EvidenceType, Reliability
 from consortium.schemas.hypothesis import EvidenceSupport, Hypothesis, SupportRole
+from consortium.schemas.hypothesis import RankedHypotheses
+
 
 
 # --- Fixtures ---
@@ -34,6 +37,15 @@ def _case() -> Case:
                 reliability_note="n", chain_of_custody_note="n",
             ),
         ],
+    )
+
+
+def _ranked_hypotheses() -> RankedHypotheses:
+    """Minimal RankedHypotheses wrapping the single test hypothesis."""
+    hyp = _hypothesis()
+    return RankedHypotheses(
+        case_id="c1",
+        hypotheses=[hyp],
     )
 
 
@@ -84,12 +96,57 @@ def _invalid_tree_dangling_edge() -> EventTree:
         root_node_id="N0",
     )
 
+def _multi_hypothesis_tree() -> EventTree:
+    """Minimal event tree marked as representing two hypotheses, with
+    contributing_hypotheses populated on nodes and edges."""
+    return EventTree(
+        case_id="c1",
+        hypothesis_id="H1",  # legacy single-id field; keep for schema compat
+        nodes=[
+            EventTreeNode(
+                id="N0",
+                description="shared root",
+                contributing_hypotheses=["H1", "H2"],
+            ),
+            EventTreeNode(
+                id="N1",
+                description="H1 branch",
+                contributing_hypotheses=["H1"],
+            ),
+            EventTreeNode(
+                id="N2",
+                description="H2 branch",
+                contributing_hypotheses=["H2"],
+            ),
+        ],
+        edges=[
+            EventTreeEdge(
+                id="T0",
+                from_node="N0",
+                to_node="N1",
+                event_label="H1 path",
+                conditional_probability=0.6,
+                contributing_hypotheses=["H1"],
+            ),
+            EventTreeEdge(
+                id="T1",
+                from_node="N0",
+                to_node="N2",
+                event_label="H2 path",
+                conditional_probability=0.4,
+                contributing_hypotheses=["H2"],
+            ),
+        ],
+        root_node_id="N0",
+    )
+
+
 
 # --- Tests ---
 
 def test_generate_ceg_returns_validated_ceg():
     client = MockClient(structured_responses=[_valid_tree()])
-    ceg = generate_ceg(_case(), _hypothesis(), client)
+    ceg = generate_ceg(_case(), _ranked_hypotheses(), client)
     assert ceg.case_id == "c1"
     assert ceg.hypothesis_id == "H1"
     assert validate_ceg_structure(ceg) == []
@@ -97,13 +154,13 @@ def test_generate_ceg_returns_validated_ceg():
 
 def test_generate_ceg_calls_llm_with_event_tree_schema():
     client = MockClient(structured_responses=[_valid_tree()])
-    generate_ceg(_case(), _hypothesis(), client)
+    generate_ceg(_case(), _ranked_hypotheses(), client)
     assert client.call_log[0]["schema"] == "EventTree"
 
 
 def test_generate_ceg_includes_system_and_user_messages():
     client = MockClient(structured_responses=[_valid_tree()])
-    generate_ceg(_case(), _hypothesis(), client)
+    generate_ceg(_case(), _ranked_hypotheses(), client)
     roles = [m["role"] for m in client.call_log[0]["messages"]]
     assert roles == ["system", "user"]
 
@@ -112,7 +169,7 @@ def test_generate_ceg_raises_when_invalid_and_no_retries():
     client = MockClient(structured_responses=[_invalid_tree_dangling_edge()])
     with pytest.raises(EventTreeValidationError):
         generate_ceg(
-            _case(), _hypothesis(), client, max_structural_retries=0
+            _case(), _ranked_hypotheses(), client, max_structural_retries=0
         )
 
 
@@ -133,7 +190,7 @@ def test_generate_ceg_skips_validation_when_validate_false():
         root_node_id="N0",
     )
     client = MockClient(structured_responses=[bad_sum_tree])
-    ceg = generate_ceg(_case(), _hypothesis(), client, validate=False)
+    ceg = generate_ceg(_case(), _ranked_hypotheses(), client, validate=False)
     # The conversion's normalization pass should still have produced
     # a structurally valid CEG.
     assert validate_ceg_structure(ceg) == []
@@ -147,7 +204,7 @@ def test_generate_ceg_retries_invalid_and_succeeds_on_valid_tree():
             _valid_tree(),
         ]
     )
-    ceg = generate_ceg(_case(), _hypothesis(), client)
+    ceg = generate_ceg(_case(), _ranked_hypotheses(), client)
     assert ceg.case_id == "c1"
 
 
@@ -160,7 +217,7 @@ def test_generate_ceg_raises_after_exhausting_retries():
         ]
     )
     with pytest.raises(EventTreeValidationError, match="3 attempt"):
-        generate_ceg(_case(), _hypothesis(), client)
+        generate_ceg(_case(), _ranked_hypotheses(), client)
 
 
 def test_generate_ceg_propagates_evidence_grounding_errors():
@@ -180,4 +237,7 @@ def test_generate_ceg_propagates_evidence_grounding_errors():
     )
     client = MockClient(structured_responses=[bad_evidence_tree])
     with pytest.raises(EventTreeValidationError, match="E999"):
-        generate_ceg(_case(), _hypothesis(), client, max_structural_retries=0)
+        generate_ceg(_case(), _ranked_hypotheses(), client, max_structural_retries=0)
+
+
+

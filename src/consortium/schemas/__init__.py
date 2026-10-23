@@ -76,6 +76,7 @@ __all__ = [
     "EvidenceCard",
     "EvidenceType",
     "Reliability",
+    "EvidenceCardDraft",
     # hypothesis
     "Actor",
     "ActorRole",

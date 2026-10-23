@@ -46,7 +46,7 @@ from consortium.clients.base import LLMClient, Message
 from consortium.schemas.case import Case
 from consortium.schemas.ceg import ChainEventGraph
 from consortium.schemas.event_tree import EventTree
-from consortium.schemas.hypothesis import Hypothesis
+from consortium.schemas.hypothesis import Hypothesis, RankedHypotheses
 from consortium.utils.audit import get_active_logger
 from consortium.utils.prompts import render_template
 
@@ -55,11 +55,12 @@ from consortium.ceg.event_tree_repair import repair_event_tree
 
 def generate_ceg(
     case: Case,
-    hypothesis: Hypothesis,
+    hypotheses: RankedHypotheses,
     client: LLMClient,
     *,
+    top_k: int = 4,
     system_prompt_template: str = "system/event_tree_generator.j2",
-    user_prompt_template: str = "event_tree/generate_from_hypothesis.j2",
+    user_prompt_template: str = "event_tree/generate_from_hypotheses.j2",
     temperature: float = 0.2,
     max_tokens: Optional[int] = 4096,
     validate: bool = True,
@@ -74,7 +75,7 @@ def generate_ceg(
 
     Args:
         case: The case the hypothesis explains.
-        hypothesis: Usually the top-ranked Hypothesis from the consortium.
+        hypotheses: Usually the top-ranked Hypotheses from the consortium.
         client: An LLMClient.
         system_prompt_template: System prompt under prompts/.
         user_prompt_template: User prompt under prompts/.
@@ -91,12 +92,15 @@ def generate_ceg(
     Raises:
         EventTreeValidationError: if validation exhausts all retries.
     """
+    top_hypotheses = hypotheses.hypotheses[:top_k]
+    total_weight = sum(h.confidence_score or 0 for h in top_hypotheses)
     system = render_template(system_prompt_template)
     user = render_template(
-        user_prompt_template,
-        case=case,
-        evidence=case.evidence,
-        hypothesis=hypothesis,
+    user_prompt_template,
+    case=case,
+    evidence=case.evidence,
+    hypotheses=top_hypotheses,
+    total_weight=total_weight,
     )
 
     messages: list[Message] = [
@@ -105,6 +109,15 @@ def generate_ceg(
     ]
 
     logger = get_active_logger()
+    # After rendering the prompt, before the LLM call:
+    if logger:
+        logger.event(
+            "multi_hypothesis_tree_requested",
+            top_k_requested=top_k,
+            hypotheses_included=[h.id for h in top_hypotheses],
+            total_weight=total_weight,
+        )
+
     last_problems: list[str] = []
 
     for attempt in range(max_structural_retries + 1):
@@ -114,6 +127,27 @@ def generate_ceg(
             temperature=temperature,
             max_tokens=max_tokens,
         )
+        # After the tree is returned, before repair:
+        if logger:
+            all_hypothesis_ids = set()
+            for n in tree.nodes:
+                all_hypothesis_ids.update(n.contributing_hypotheses)
+            for e in tree.edges:
+                all_hypothesis_ids.update(e.contributing_hypotheses)
+            logger.event(
+                "multi_hypothesis_tree_received",
+                attempt=attempt + 1,
+                hypotheses_covered=sorted(all_hypothesis_ids),
+                hypotheses_requested=[h.id for h in top_hypotheses],
+                coverage_fraction=(
+                    len(all_hypothesis_ids & {h.id for h in top_hypotheses})
+                    / max(1, len(top_hypotheses))
+                ),
+                multi_hypothesis_edge_fraction=(
+                    sum(1 for e in tree.edges if len(e.contributing_hypotheses) > 1)
+                    / max(1, len(tree.edges))
+                ),
+            )
 
         # Repair pass: drop orphans, expand DAG to tree, normalise probs.
         # Common 3B-model failure modes are fixable without an LLM round-trip.

@@ -64,3 +64,45 @@ class EvidenceCard(BaseModel):
     chain_of_custody_note: str = Field(
         ..., description="Provenance and handling trail for the evidence."
     )
+
+class EvidenceCardDraft(BaseModel):
+    """An EvidenceCard as emitted by the ingestion (it used not anymore from ingestion, ingestion phase has been completely deleted) LLM, before ID assignment.
+
+    Structurally identical to EvidenceCard except that `id` is absent. The
+    LLM does not assign IDs — the assembly step assigns them sequentially
+    across all cards produced from all source documents in an ingestion
+    run. This keeps ID assignment deterministic and prevents the LLM from
+    having to coordinate unique IDs across multiple independent calls.
+
+    Downstream code never sees a draft; the assembly step promotes drafts
+    to full EvidenceCards before writing evidence.json.
+    """
+
+    model_config = ConfigDict(use_enum_values=True, extra="forbid")
+
+    type: EvidenceType
+    title: str
+    content: str
+
+    source: str
+    timestamp_referenced: Optional[str] = None
+    location_referenced: Optional[str] = None
+
+    reliability: Reliability
+    reliability_note: str
+    chain_of_custody_note: str
+
+    def to_card(self, card_id: str) -> EvidenceCard:
+        """Promote this draft to a full EvidenceCard with an assigned ID."""
+        return EvidenceCard(
+            id=card_id,
+            type=self.type,
+            title=self.title,
+            content=self.content,
+            source=self.source,
+            timestamp_referenced=self.timestamp_referenced,
+            location_referenced=self.location_referenced,
+            reliability=self.reliability,
+            reliability_note=self.reliability_note,
+            chain_of_custody_note=self.chain_of_custody_note,
+        )

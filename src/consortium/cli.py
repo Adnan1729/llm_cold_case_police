@@ -26,6 +26,12 @@ from consortium.orchestrators import PhasedOrchestrator
 from consortium.pipeline import generate_ceg, run_consortium
 from consortium.schemas import RankedHypotheses
 
+from consortium.io import (
+    load_pipeline_config,
+    make_run_directory,
+)
+from consortium.utils.audit import RunLogger, set_active_logger
+
 app = typer.Typer(
     help="Cold-case LLM consortium pipeline.",
     no_args_is_help=True,
@@ -110,8 +116,7 @@ def run(
                 console.print("\n[bold green]Stage 2: CEG generation[/bold green]")
                 ceg_client = build_ceg_client_from_config(cfg)
                 console.print(f"  -> using {ceg_client.name}")
-                top_hypothesis = ranked.hypotheses[0]
-                ceg = generate_ceg(case_obj, top_hypothesis, ceg_client)
+                ceg = generate_ceg(case_obj, ranked, ceg_client)
                 paths = write_ceg(ceg, run_dir, also_dot=True)
                 console.print(
                     f"  -> wrote {paths['json'].name}, {paths['dot'].name}"

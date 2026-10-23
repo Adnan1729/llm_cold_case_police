@@ -289,7 +289,8 @@ def _thomson_ceg(case_id: str) -> ChainEventGraph:
                     associated_evidence=["E010"]),
         ],
         edges=[
-            CEGEdge(id="T0", from_node="N0", to_node="N1",
+            CEGEdge(
+                    id="T0", from_node="N0", to_node="N1", 
                     event_label="Leaves pub at 21:34",
                     conditional_probability=1.0,
                     associated_evidence=["E003"]),
@@ -467,8 +468,7 @@ def test_pipeline_end_to_end_with_mocks(tmp_path: Path):
         structured_responses=[_thomson_event_tree(case.metadata.case_id)],
     )
 
-    top_hypothesis = ranked.hypotheses[0]
-    ceg = generate_ceg(case, top_hypothesis, ceg_client)
+    ceg = generate_ceg(case, ranked, ceg_client)
 
     assert ceg.case_id == case.metadata.case_id
     assert ceg.hypothesis_id == "H1"

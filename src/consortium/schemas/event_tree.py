@@ -43,6 +43,16 @@ class EventTreeNode(BaseModel):
         description="Evidence IDs that anchor this state.",
     )
 
+    contributing_hypotheses: list[str] = Field(
+        default_factory=list,
+        description=(
+            "IDs of input hypotheses that endorse this branch. "
+            "Populated by the LLM in multi-hypothesis mode; empty list "
+            "in single-hypothesis mode for backward compatibility."
+        ),
+    )
+
+
 
 class EventTreeEdge(BaseModel):
     """A directed edge in the event tree, representing a transition (event)."""
@@ -65,6 +75,15 @@ class EventTreeEdge(BaseModel):
         ),
     )
     associated_evidence: list[str] = Field(default_factory=list)
+    
+    contributing_hypotheses: list[str] = Field(
+        default_factory=list,
+        description=(
+            "IDs of input hypotheses that endorse this branch. "
+            "Populated by the LLM in multi-hypothesis mode; empty list "
+            "in single-hypothesis mode for backward compatibility."
+        ),
+    )
 
 
 class EventTree(BaseModel):

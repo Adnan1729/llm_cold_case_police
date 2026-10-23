@@ -114,10 +114,10 @@ lives.
 
 ### `pipeline/` — pipeline stages
 
-- **`ingestion.py`** — `ingest_case_text`. Converts unstructured text
+<!-- - **`ingestion.py`** — `ingest_case_text`. Converts unstructured text
   to structured EvidenceCards via the ingestion model. Not yet used
   in production runs (toy case is already structured) but the wiring
-  is in place.
+  is in place. // Not doing it anymore, too much scope for the paper; also police scotland is not  -->
 - **`aggregation.py`** — `aggregate_weighted_mean`,
   `aggregate_with_ranks`. Combines per-agent scores into a final
   confidence and assigns ranks.
