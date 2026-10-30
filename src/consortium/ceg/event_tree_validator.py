@@ -51,7 +51,15 @@ def validate_event_tree_structure(
     """
     problems: list[str] = []
     node_ids = {n.id for n in tree.nodes}
-
+    
+    if not tree.edges:
+        problems.append(
+            "tree has no edges (root is the only node); event trees "
+            "must have at least one branching event representing the "
+            "hypothesis space"
+        )
+        return problems
+    
     # 1. Root exists
     if tree.root_node_id not in node_ids:
         problems.append(
@@ -148,6 +156,7 @@ def validate_event_tree_evidence_grounding(
     """
     problems: list[str] = []
     valid_ids = {e.id for e in case.evidence}
+    
 
     for node in tree.nodes:
         for ev_id in node.associated_evidence:
@@ -164,6 +173,7 @@ def validate_event_tree_evidence_grounding(
                 )
 
     return problems
+
 
 
 def assert_event_tree_valid(
